@@ -9,25 +9,48 @@ impl Line{
         }
     }
 }
+
+// struct Gate {
+//     gate_type: String,
+//     input1: Line,
+//     input2: Line,
+//     output: Line
+// }
+// impl Gate {
+//     fn new(gate_type: String, input1: Line, input2: Line) -> Self {
+//         let output = match gate_type.as_str(){
+//             "AND" => Line::new(input1.value && input2.value),
+//             "OR" => Line::new(input1.value || input2.value),
+//             _ => Line::new(false)
+//         };
+//         Self{
+//             gate_type,
+//             input1,
+//             input2,
+//             output
+//         }
+//     }
+// }
 #[derive(Debug)]
-struct Gate {
-    gate_type: String,
-    input1: Line,
-    input2: Line,
-    output: Line
+enum Gate{
+    AND{ input1: Line, input2: Line, output: Line },
+    OR{ input1: Line, input2: Line, output: Line }
 }
+
 impl Gate {
-    fn new(gate_type: String, input1: Line, input2: Line) -> Self {
-        let output = match gate_type.as_str(){
-            "AND" => Line::new(input1.value && input2.value),
-            "OR" => Line::new(input1.value || input2.value),
-            _ => Line::new(false)
-        };
-        Self{
-            gate_type,
-            input1,
-            input2,
-            output
+    fn and(input1: Line, input2: Line) -> Self{
+        let output = Line::new(input1.value && input2.value);
+        Gate::AND{ input1, input2, output }
+    }
+    fn or(input1: Line, input2: Line) -> Self{
+        let output = Line::new(input1.value || input2.value);
+        Gate::OR{ input1, input2, output }
+    }
+
+    fn output(self) -> Line{
+        match self {
+            Gate::AND{ output, .. } => output,
+            Gate::OR{ output, .. } => output,
         }
     }
 }
@@ -40,11 +63,11 @@ fn main() {
     let input_line3 = Line::new(true);
     let input_line4 = Line::new(false);
 
-    let gate = Gate::new(String::from("AND"), input_line, input_line2);
-    let gate2 = Gate::new(String::from("OR"), input_line3, input_line4);
+    let gate = Gate::and(input_line, input_line2);
+    let gate2 = Gate::or(input_line3, input_line4);
     // dbg!(gate);
     // dbg!(gate2);
 
-    let gate3 = Gate::new(String::from("AND"), gate.output, gate2.output);
+    let gate3 = Gate::and(gate.output(), gate2.output());
     dbg!(gate3);
 }
